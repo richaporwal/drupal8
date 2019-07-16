@@ -1,0 +1,22 @@
+diff --git a/conditional_fields.module b/conditional_fields.module
+index 86a8ce7..0bff9dd 100644
+--- a/conditional_fields.module
++++ b/conditional_fields.module
+@@ -153,8 +153,16 @@ function conditional_fields_element_info_alter(array &$types) {
+  * - Field dependencies data.
+  */
+ function conditional_fields_element_after_build($element, FormStateInterface &$form_state) {
++
++  // No widget title, maybe skip the conditional checks.
+   if (!isset($element['#title']) && !isset($element['widget']['#title'])) {
+-    return $element;
++
++    // For compatibility with field types that wrap themselves in containers
++    // such as Paragraph reference fields, the widget title may be empty yet
++    // still a valid candidate.
++    if (isset($element['#type']) && $element['#type'] != 'container') {
++      return $element;
++    }
+   }
+ 
+   // A container with a field widget.
